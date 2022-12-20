@@ -1,0 +1,23 @@
+@import '../../assets/styles';
+
+.container {
+  background: rgba(189, 189, 189, 0.5);
+  min-height: 100px;
+}
+
+.content {
+  max-width: 1536px;
+  margin: 30px auto;
+}
+
+.lists {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  color: darkslategray;
+  @media screen and (max-width: 1199px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media screen and (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+}
