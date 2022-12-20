@@ -5,10 +5,12 @@ import {userData} from "../../redux/slices/authSlice";
 import styles from './Home.module.scss';
 import { IconButton } from "@mui/material";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import {useNavigate} from "react-router-dom";
 
 const Home = () => {
 
     const user = useSelector(userData);
+    const navigator = useNavigate();
 
     useEffect(() => {  },[user]);
 
@@ -22,7 +24,7 @@ const Home = () => {
                     edge="start"
                     color="inherit"
                     aria-label="menu"
-
+                    onClick={() => navigator('/products')}
                 >
                     <ShoppingCartIcon sx={{fontSize: '52px'}}/>
                 </IconButton>

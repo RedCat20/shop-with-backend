@@ -1,24 +1,32 @@
-import React, {FC, useState} from 'react';
-import {Box, Button, FormHelperText, Input, InputLabel, Paper} from "@mui/material";
-import Typography from "@mui/material/Typography";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Radio from "@mui/material/Radio";
+import React, {ChangeEvent, FC, useState} from 'react';
 import {useForm} from "react-hook-form";
+
+import {Box, Button, FormHelperText, Input, InputLabel, Paper} from "@mui/material";
+import {Typography,FormControl,FormLabel} from "@mui/material";
+import {RadioGroup,FormControlLabel,Radio} from "@mui/material";
+
+import {useUploadProductImageMutation} from "../../redux/api/productsApi";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
+import {SerializedError} from "@reduxjs/toolkit";
+
+interface IUploadImageRes {
+    data?: any;
+    error?: FetchBaseQueryError | SerializedError;
+}
 
 interface Props {
     product?: any;
     actionStr?: string;
-    onSubmit: (values: any) => void;
+    onSubmit: (id: string, newProduct: {}) => void;
 }
 
 const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
 
-    console.log('product: ', product);
+    //console.log('product of product form: ', product);
 
+    const [uploadImage, uploadImageResponse] = useUploadProductImageMutation();
     const [addProductError, setAddProductError] = useState('');
+    const [isAvailableProduct, setIsAvailableProduct] = useState(true);
 
     const {
         register,
@@ -29,11 +37,35 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
         defaultValues: {
             name: product?.name || '',
             price: product?.price || null,
-            isAvailable: product?.isAvailable || true,
-            imageURL: product?.imageURL || ''
+            isAvailable: product?.isAvailable,
+            imageURL: product?.imageURL || null
         },
         mode: 'onSubmit'
     });
+
+    const saveProductDataHandler = async (values: any) => {
+        // console.log(values)
+        try {
+            const formData = new FormData();
+            if (values.imageURL) {
+                const imageFile = values.imageURL[0];
+                formData.append('image', imageFile);
+            }
+            const res: IUploadImageRes = await uploadImage(formData);
+
+            let newProduct = {};
+
+            if (res?.data?.url) {
+                newProduct = {...values, imageURL: res.data.url, isAvailable: isAvailableProduct};
+            } else {
+                newProduct = {...values, imageURL: product.imageURL, isAvailable: isAvailableProduct};
+            }
+            // console.log(product._id,newProduct)
+            onSubmit( product._id, newProduct);
+        }  catch (err) {
+            console.log('Can not create product data', err);
+        }
+    }
 
     return (
         <Box maxWidth={'sm'} sx={{margin: '0 auto'}}>
@@ -41,7 +73,7 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
 
                 <Typography variant="h4" sx={{marginBottom: '45px'}}>Product info</Typography>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form onSubmit={handleSubmit(saveProductDataHandler)}>
                     <FormControl required fullWidth sx={{marginBottom: '45px'}}>
                         <InputLabel htmlFor="my-input">Product name</InputLabel>
                         <Input type="text"
@@ -71,11 +103,11 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
                         <RadioGroup
                             row
                             aria-labelledby="available-radio-buttons-group-label"
-                            name="isAvailable"
-                            defaultValue={product?.isAvailable || true}
+                            onChange={(e: ChangeEvent<HTMLInputElement>) => { console.log(e.target.value); setIsAvailableProduct(e.target.value === 'true') }}
+                            defaultValue={product?.isAvailable === true}
                         >
-                            <FormControlLabel value="true" control={<Radio />} label="True" />
-                            {/*<FormControlLabel value="false" control={<Radio />} label="False" />*/}
+                            <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="true" control={<Radio />} label="True" />
+                            <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="false" control={<Radio />} label="False" />
                         </RadioGroup>
                     </FormControl>
 
@@ -96,7 +128,7 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
                         </span>
                     </FormControl>
 
-                    <Button fullWidth type="submit" variant="contained" onClick={onSubmit}>{actionStr || 'OK'}</Button>
+                    <Button fullWidth type="submit" variant="contained">{actionStr || 'OK'}</Button>
 
                     {addProductError && <div style={{marginTop: '30px'}}>{addProductError}</div>}
                 </form>

@@ -1,9 +1,9 @@
-// @ts-nocheck
-
 import {createSlice} from "@reduxjs/toolkit";
+import {IProduct} from "../../interfaces/product.interface";
+// import store from "../store";
 
 interface IState {
-    products: any[];
+    products: IProduct[];
     status: string;
 }
 
@@ -20,3 +20,5 @@ const productsSlice = createSlice({
 });
 
 export const productsReducer = productsSlice.reducer;
+
+// export type RootState = ReturnType<typeof store.getState>;

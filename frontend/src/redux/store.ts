@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import {configureStore} from "@reduxjs/toolkit";
 import {authReducer} from "./slices/authSlice";
 import {productsApi} from "./api/productsApi";
@@ -18,5 +16,4 @@ const store = configureStore({
 export default store;
 
 export type RootState = ReturnType<typeof store.getState>;
-
 export type AppDispatch = typeof store.dispatch;

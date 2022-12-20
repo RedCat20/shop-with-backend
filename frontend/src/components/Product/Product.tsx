@@ -54,52 +54,19 @@ const Product = () => {
         }
     }
 
-    const onSubmit = async (values: any) => {
+    const onSubmit = (id: string, newProduct: any) => {
+        if (!newProduct) return;
+        // console.log(newProduct)
 
         try {
-            //const {data} = await instanse.post('/upload', imageFile);
-            console.log(values);
-
-            const formData = new FormData();
-            const imageFile = await values.imageURL[0];
-
-            formData.append('image', imageFile);
-            // console.log(imageFile.name)
-            //// .url можна витягнути ссилку
-
-            const res = await uploadImage(formData);
-            // @ts-ignore
-            console.log('{...values, imageURL: res?.data?.url || product.imageURL}', {...values, imageURL: res?.data?.url || product.imageURL})
-            //console.log('imageFile', imageFile)
-
-            // @ts-ignore
-            // addNewProduct({...values, imageURL: res.data.url});
-            // addNewProduct({...values, imageUrl: imageFile.name});
-
-            if ( res?.data?.url) {
-                changeSelectedProduct(
-                    {
-                        id: product._id,
-                        product: {...values, imageURL: res.data.url}
-                    }
-                );
-            } else {
-                changeSelectedProduct(
-                    {
-                        id: product._id,
-                        product: {...values, imageURL: product.imageURL}
-                    }
-                );
-            }
-
-
+            changeSelectedProduct({id: id, product: newProduct});
         } catch (err) {
             console.log('Can not change product', err);
         } finally {
-            //  navigator('/products');
+            setOpen(false);
+            //navigator('/products');
         }
 
-        console.log(values)
     }
 
     return (
@@ -121,7 +88,7 @@ const Product = () => {
                       <Typography gutterBottom variant="h5" component="div" sx={{marginBottom: '30px'}}>
                           {product?.name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="subtitle1" color="text.secondary">
                         <div className={styles.listItem}>Price: {product?.price} grn</div>
                         <div>Author: {product?.user?.firstName} {product?.user?.lastName}</div>
                       </Typography>

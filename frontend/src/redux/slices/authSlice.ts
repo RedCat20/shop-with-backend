@@ -2,7 +2,7 @@ import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import instanse from "../../axios";
 
 export const fetchUserData = createAsyncThunk('auth/fetchUserData', async(params) => {
-    console.log(params)
+    // console.log(params)
     const {data} = await instanse.post('http://localhost:5000/auth', params);
     return data;
 });

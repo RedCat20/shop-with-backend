@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 import User from "./User.js";
 
 const ProductSchema = new mongoose.Schema({
+    // required
     name: {
       type: String,
       required: true,
       unique: true,
     },
-    /// Зв'язок між 2 таблицями
     user: {
       //type: String,
       type: mongoose.Schema.Types.ObjectId,
@@ -19,29 +19,15 @@ const ProductSchema = new mongoose.Schema({
       default: 0,
       required: true,
     },
-    // discount: {
-    //   type: Number,
-    //   required: false,
-    // },
     isAvailable: {
       type: Boolean,
       required: true,
     },
-    // color: {
-    //   type: String,
-    //   required: false,
-    // },
-    // size: {
-    //   type: String,
-    //   required: false,
-    // },
-    // producer: {
-    //   type: String,
-    //   required: false,
-    // },
+    // not required
     imageURL: String,
-  }, {
-    timestamps: true,
+    },
+  {
+      timestamps: true,
   }
 );
 

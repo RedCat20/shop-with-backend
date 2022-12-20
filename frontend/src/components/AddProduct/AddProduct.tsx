@@ -1,61 +1,57 @@
-import React, {FC, useState} from 'react';
-import Layout from "../Layout/Layout";
-import { InputLabel,Input,FormHelperText } from '@mui/material';
-import {useForm} from "react-hook-form";
-import {Button,Paper,Box} from "@mui/material";
-import Typography from "@mui/material/Typography";
-import {isAuthUser} from "../../redux/slices/authSlice";
-import {useSelector} from "react-redux";
+import React, {ChangeEvent, FC, useState} from 'react';
 import {Navigate, useNavigate} from "react-router-dom";
+import styles from './AddProduct.module.scss';
+import Layout from "../Layout/Layout";
+import {useForm} from "react-hook-form";
+import {useSelector} from "react-redux";
+import {isAuthUser} from "../../redux/slices/authSlice";
 
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import {InputLabel,Input,FormHelperText,Button,Paper,Box,Typography } from '@mui/material';
+import {Radio,RadioGroup,FormControlLabel,FormControl,FormLabel} from '@mui/material';
 
-import {
-    useAddNewProductMutation,
-    useUploadProductImageMutation
-} from "../../redux/api/productsApi";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
+import {SerializedError} from "@reduxjs/toolkit";
+import { useAddNewProductMutation, useUploadProductImageMutation } from "../../redux/api/productsApi";
 
+interface IUploadImageRes {
+    data?: any;
+    error?: FetchBaseQueryError | SerializedError;
+}
 
 const AddProduct:FC = () => {
-
-    const isAuth = useSelector(isAuthUser);
     const navigator = useNavigate();
+    const isAuth = useSelector(isAuthUser);
     const [addProductError, setAddProductError] = useState('');
+    const [isAvailableProduct, setIsAvailableProduct] = useState(true);
 
     const [uploadImage, uploadImageResponse] = useUploadProductImageMutation();
     const [addNewProduct, addNewProductResponse] = useAddNewProductMutation();
 
-    const {
-        register,
-        handleSubmit,
-        setError,
-        formState: {errors, isValid}
-    } = useForm({
+    const { register, handleSubmit, setError, formState: {errors, isValid} } = useForm({
         defaultValues: {
             name: '',
             price: null,
-            isAvailable: true,
-            imageURL: ''
+            isAvailable: false,
+            imageURL: null
         },
         mode: 'onSubmit'
     });
 
     const onSubmit = async (values: any) => {
+        // console.log(values)
         try {
             const formData = new FormData();
-            const imageFile = values.imageURL[0];
+            if (values.imageURL) {
+                const imageFile = values.imageURL[0];
+                formData.append('image', imageFile);
+            }
+            const res: IUploadImageRes = await uploadImage(formData);
 
-            formData.append('image', imageFile);
+            let imgUrl = null;
+            if (res && res.data && res.data.url)
+                imgUrl = res.data.url;
 
-            const res = await uploadImage(formData);
-            // @ts-ignore
-            console.log('res', res)
-            // @ts-ignore
-            addNewProduct({...values, imageURL: res.data.url});
+            addNewProduct({...values, imageURL: imgUrl, isAvailable: isAvailableProduct});
 
         } catch (err) {
             setAddProductError('Can not add product')
@@ -108,10 +104,11 @@ const AddProduct:FC = () => {
                             <RadioGroup
                                 row
                                 aria-labelledby="available-radio-buttons-group-label"
-                                name="isAvailable"
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setIsAvailableProduct(e.target.value === 'true')}
+                                defaultValue="true"
                             >
-                                <FormControlLabel value="true" control={<Radio />} label="True" />
-                                {/*<FormControlLabel value="false" control={<Radio />} label="False" />*/}
+                                <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="true" control={<Radio />} label="True" />
+                                <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="false" control={<Radio />} label="False" />
                             </RadioGroup>
                         </FormControl>
 
@@ -119,16 +116,16 @@ const AddProduct:FC = () => {
                             <Input type="file"
                                    error={Boolean(errors.imageURL?.message)}
                                    id="image-input" aria-describedby="image-helper-text"
-                                   {...register('imageURL', {required: 'Please, enter product price'})}
+                                   {...register('imageURL', {required: 'Please, choose a file of product photo'})}
                             />
                             <FormHelperText id="image-helper-text">
-                                {errors.imageURL?.message ? errors.imageURL?.message : "We'll never share your password"}
+                                {errors.imageURL?.message ? errors.imageURL?.message : "Please, choose a file"}
                             </FormHelperText>
                         </FormControl>
 
                         <Button fullWidth type="submit" variant="contained">Add product</Button>
 
-                        {addProductError && <div style={{marginTop: '30px'}}>{addProductError}</div>}
+                        {addProductError && <div className={styles.sendError} style={{marginTop: '30px'}}>{addProductError}</div>}
                     </form>
                 </Paper>
             </Box>

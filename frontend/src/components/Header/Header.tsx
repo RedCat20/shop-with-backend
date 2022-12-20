@@ -1,4 +1,5 @@
 import React, {FC} from 'react';
+import useWindowSize from '../../hooks/useResizeHook';
 
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -27,6 +28,7 @@ const links = [
 interface Props { }
 
 const Header:FC<Props> = () => {
+    const size = useWindowSize();
 
     const navigator = useNavigate();
     const dispatch = useDispatch();
@@ -64,7 +66,7 @@ const Header:FC<Props> = () => {
                             textDecoration: 'none',
                         }}
                     >
-                        SHOP
+                        {size?.width > 575 && <>SHOP</>}
                     </Typography>
 
                     <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
@@ -115,25 +117,30 @@ const Header:FC<Props> = () => {
 
                         </Menu>
                     </Box>
-                    <AdbIcon sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}/>
-                    <Typography
-                        variant="h5"
-                        noWrap
-                        component="a"
-                        href=""
-                        sx={{
-                            mr: 2,
-                            display: {xs: 'flex', md: 'none'},
-                            flexGrow: 1,
-                            fontFamily: 'monospace',
-                            fontWeight: 700,
-                            letterSpacing: '.3rem',
-                            color: 'inherit',
-                            textDecoration: 'none',
-                        }}
-                    >
-                        LOGO
-                    </Typography>
+                    {size?.width > 575 && <>
+                        <AdbIcon sx={{display: {xs: 'flex', md: 'none'}, mr: 1}}/>
+
+                        <Typography
+                            variant="h5"
+                            noWrap
+                            component="a"
+                            href=""
+                            sx={{
+                                mr: 2,
+                                display: {xs: 'flex', md: 'none'},
+                                flexGrow: 1,
+                                fontFamily: 'monospace',
+                                fontWeight: 700,
+                                letterSpacing: '.3rem',
+                                color: 'inherit',
+                                textDecoration: 'none',
+                            }}
+                        >
+                            SHOP
+                        </Typography>
+                    </>
+                    }
+
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
 
                         {links.map((link, idx) => (
