@@ -47,6 +47,23 @@ export const productsApi = createApi({
             }),
             invalidatesTags: ['Product'],
         }),
+        changeSelectedProduct: builder.mutation({
+            // @ts-ignore
+            query: ({id, product}) => {
+                console.log('query', id, product);
+                return ({
+                    url: `/products/${id}`,
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: product
+                    //credentials: 'include',
+                })
+            },
+            invalidatesTags: ['Product'],
+            // Pick out data and prevent nested properties in a hook or selector
+        }),
     }),
 })
 
@@ -55,4 +72,6 @@ export const {
     useGetProductByIdQuery,
     useRemoveProductByIdMutation,
     useUploadProductImageMutation,
-    useAddNewProductMutation} = productsApi
+    useAddNewProductMutation,
+    useChangeSelectedProductMutation
+} = productsApi

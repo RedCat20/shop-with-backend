@@ -80,21 +80,25 @@ export const removeProductById = async (req, res) => {
       _id: prodId
     },
       (error, document) => {
+        console.log(error)
+
         if (error) {
           res.status(500).json({
             message: 'Product can not remove'
           });
         }
 
-        if (!document) {
+        else if (!document) {
           res.status(404).json({
-            message: 'Product not found and'
+            message: 'Product not found and remov'
           });
         }
 
-        res.status(200).json({
-          success: 'true'
-        })
+        else {
+          res.status(200).json({
+            success: 'true'
+          })
+        }
       }
     );
   }
@@ -104,6 +108,61 @@ export const removeProductById = async (req, res) => {
       {
         success: false,
         message: 'Can not remove this product'
+      }
+    )
+  }
+}
+
+export const updateProductById = async (req, res) => {
+  try {
+
+    const prodId = req.params.id;
+
+    // findOne
+    // findById
+    ProductSchema.findOneAndUpdate({
+        _id: prodId
+      },
+      {
+        _id: req.params.id,
+        name: req.body.name,
+        price: req.body.price,
+        isAvailable: req.body.isAvailable,
+        imageURL: req.body.imageURL,
+        user: req.userId,
+      },
+      (error, document) => {
+        if (error) {
+          console.log(error)
+          res.status(500).json({
+            message: 'Product can not update'
+          });
+        }
+
+        else if (!document) {
+          res.status(404).json({
+            message: 'Product not found and update'
+          });
+        }
+
+        else {
+          res.status(200).json({
+            success: 'true'
+          })
+        }
+      }
+    );
+
+    // res.status(200).json({
+    //   success: 'true'
+    // })
+  }
+  catch(err) {
+    console.log(err);
+    res.status(500).json(
+      {
+        success: false,
+        message: 'Can not update this product'
       }
     )
   }

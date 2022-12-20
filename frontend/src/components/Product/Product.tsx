@@ -1,11 +1,14 @@
+// @ts-nocheck
+
 import Layout from "../Layout/Layout";
 import React, {useEffect, useState} from "react";
 import styles from './Product.module.scss';
 import Typography from "@mui/material/Typography";
 
 import {
+    useChangeSelectedProductMutation,
     useGetProductByIdQuery,
-    useRemoveProductByIdMutation
+    useRemoveProductByIdMutation, useUploadProductImageMutation
 } from '../../redux/api/productsApi';
 import {useSelector} from "react-redux";
 import {userData} from "../../redux/slices/authSlice";
@@ -17,11 +20,17 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import {useNavigate, useParams} from "react-router-dom";
+import ProductForm from "../Forms/ProductForm";
+import DialogWindow from "../DialogWindow/DialogWindow";
 
 const Product = () => {
     const navigator = useNavigate();
 
+
     const [productId, setProductId] = useState('');
+    const [open, setOpen] = useState(false);
+    const [uploadImage, uploadImageResponse] = useUploadProductImageMutation();
+    const [changeSelectedProduct, changeSelectedProductResponse] = useChangeSelectedProductMutation();
 
     const params = useParams();
 
@@ -43,6 +52,54 @@ const Product = () => {
         } catch (err) {
             console.log('Can not remove product', err);
         }
+    }
+
+    const onSubmit = async (values: any) => {
+
+        try {
+            //const {data} = await instanse.post('/upload', imageFile);
+            console.log(values);
+
+            const formData = new FormData();
+            const imageFile = await values.imageURL[0];
+
+            formData.append('image', imageFile);
+            // console.log(imageFile.name)
+            //// .url можна витягнути ссилку
+
+            const res = await uploadImage(formData);
+            // @ts-ignore
+            console.log('{...values, imageURL: res?.data?.url || product.imageURL}', {...values, imageURL: res?.data?.url || product.imageURL})
+            //console.log('imageFile', imageFile)
+
+            // @ts-ignore
+            // addNewProduct({...values, imageURL: res.data.url});
+            // addNewProduct({...values, imageUrl: imageFile.name});
+
+            if ( res?.data?.url) {
+                changeSelectedProduct(
+                    {
+                        id: product._id,
+                        product: {...values, imageURL: res.data.url}
+                    }
+                );
+            } else {
+                changeSelectedProduct(
+                    {
+                        id: product._id,
+                        product: {...values, imageURL: product.imageURL}
+                    }
+                );
+            }
+
+
+        } catch (err) {
+            console.log('Can not change product', err);
+        } finally {
+            //  navigator('/products');
+        }
+
+        console.log(values)
     }
 
     return (
@@ -82,6 +139,12 @@ const Product = () => {
                                 <CardActions sx={{display: 'flex', marginTop: '15px', justifyContent: 'space-between'}}>
 
                                     <Button color="success"
+                                            fullWidth variant="outlined"
+                                            onClick={() => setOpen(true)}
+                                    >
+                                        Edit
+                                    </Button>
+                                    <Button color="success"
                                             fullWidth
                                             variant="outlined"
                                             onClick={() => { onRemoveProductHandler(product?._id)} }>
@@ -94,6 +157,11 @@ const Product = () => {
                     </CardContent>
                   </Box>
             }
+
+            {open && <DialogWindow isOpen={open} callback={() => setOpen(prev => !prev)}>
+              <ProductForm actionStr="Edit product" onSubmit={onSubmit.bind(this)} product={product}/>
+            </DialogWindow>}
+
         </Layout>
     )
 }

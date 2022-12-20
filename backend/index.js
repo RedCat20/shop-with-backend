@@ -59,6 +59,7 @@ app.post('/products', checkAuth, productValidator, productCtrl.addProduct)
 app.get('/products', productValidator, productCtrl.getAllProducts)
 app.get('/products/:id', productValidator, productCtrl.getProductById)
 app.delete('/products/:id', checkAuth, productValidator, productCtrl.removeProductById)
+app.patch('/products/:id', checkAuth, productValidator, productCtrl.updateProductById)
 
 
 app.listen(5000, (err) => {
