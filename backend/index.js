@@ -12,7 +12,7 @@ import {checkAuth, handleValidationErrors} from "./helpers/middleware/index.js";
 
 mongoose
   .set('strictQuery', false)
-  .connect('mongodb+srv://admin:1111@cluster0.otlrykd.mongodb.net/shop?retryWrites=true&w=majority')
+  .connect(process.env.MONGO_DB_URL || 'mongodb+srv://admin:1111@cluster0.otlrykd.mongodb.net/shop?retryWrites=true&w=majority')
   .then(() => console.log('Connection for database is ready.'))
   .catch((err) => console.log('Connection for database is failed', err));
 
@@ -62,7 +62,7 @@ app.delete('/products/:id', checkAuth, productValidator, productCtrl.removeProdu
 app.patch('/products/:id', checkAuth, productValidator, productCtrl.updateProductById)
 
 
-app.listen(5000, (err) => {
+app.listen(process.env.BACKEND_PORT || 5000, (err) => {
   if (err) {
     return console.log('Server has not started', err);
   }

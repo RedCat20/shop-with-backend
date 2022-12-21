@@ -7,6 +7,7 @@ import {useGetProductsQuery} from '../../redux/api/productsApi';
 import Layout from "../Layout/Layout";
 import noImage from '../../assets/images/no-image.jpg';
 import {Grid, Typography, Card, CardActions, CardContent, CardMedia, Button} from "@mui/material";
+import {basePath} from "../../data/paths";
 
 const Products = () => {
 
@@ -40,7 +41,7 @@ const Products = () => {
                                         component="img"
                                         height="300px"
                                         sx={{margin: '0 auto'}}
-                                        image={product?.imageURL ? `http://localhost:5000${product?.imageURL}` : noImage}
+                                        image={product?.imageURL ? `${basePath}${product?.imageURL}` : noImage}
                                         alt="green iguana"
                                     />
                                 </div>

@@ -1,7 +1,8 @@
 import axios, {AxiosRequestConfig} from 'axios';
+import {basePath} from "./data/paths";
 
 const instanse = axios.create({
-    baseURL: 'http://localhost:5000'
+    baseURL: basePath
 })
 
 type AxiosRequestConfigWithHeaders = {

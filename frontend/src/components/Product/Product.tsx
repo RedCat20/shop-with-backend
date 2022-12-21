@@ -19,6 +19,7 @@ import {userData} from "../../redux/slices/authSlice";
 import {Card,Box,CardActions,CardContent,CardMedia,Button} from '@mui/material';
 import {noProductImgUrl} from "../../data/no.image.data";
 import {IProduct} from "../../interfaces/product.interface";
+import {basePath} from "../../data/paths";
 
 const Product:FC = () => {
     const navigator = useNavigate();
@@ -72,7 +73,7 @@ const Product:FC = () => {
                         <CardMedia
                             component="img"
                             height="auto"
-                            image={product?.imageURL ? `http://localhost:5000${product?.imageURL}` : noProductImgUrl
+                            image={product?.imageURL ? `${basePath}${product?.imageURL}` : noProductImgUrl
                         }
                             alt="green iguana"
                         />

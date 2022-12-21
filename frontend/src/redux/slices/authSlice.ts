@@ -2,22 +2,23 @@ import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import instanse from "../../axios";
 import {IUser} from "../../interfaces/user.interface";
 import {RootState} from "../store";
+import {basePath} from "../../data/paths";
 
 export const fetchUserData = createAsyncThunk('auth/fetchUserData', async(params) => {
     // console.log('params', params)
-    const {data} = await instanse.post('http://localhost:5000/auth', params);
+    const {data} = await instanse.post(`${basePath}/auth`, params);
     // console.log('auth user data: ', data);
     return data;
 });
 
 export const fetchUserProfileData = createAsyncThunk('auth/fetchUserProfileData', async() => {
-    const {data} = await instanse.get('http://localhost:5000/profile');
+    const {data} = await instanse.get(`${basePath}/profile`);
     return data;
 });
 
 export const fetchUserRegistry = createAsyncThunk('auth/fetchUserRegistry', async(params) => {
     // console.log('params', params)
-    const {data} = await instanse.post('http://localhost:5000/registry', params);
+    const {data} = await instanse.post(`${basePath}/registry`, params);
     // console.log('registered user data: ', data);
     return data;
 });
