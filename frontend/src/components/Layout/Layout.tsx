@@ -5,7 +5,7 @@ import Footer from "../Footer/Footer";
 import Container from "@mui/material/Container";
 
 interface Props {
-    children: ReactNode;
+    children?: ReactNode;
 }
 
 const Layout:FC<Props> = ({children}) => {

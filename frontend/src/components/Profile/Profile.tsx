@@ -1,20 +1,25 @@
-import React, {FC, useEffect, useState} from 'react';
+import {FC, useEffect, useState} from 'react';
+import {Navigate} from "react-router-dom";
+
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHooks";
+import {fetchUserProfileData, isAuthUser} from "../../redux/slices/authSlice";
+import {PayloadAction} from "@reduxjs/toolkit";
+
 import Layout from "../Layout/Layout";
 import styles from "./Profile.module.scss";
 
-import {useDispatch, useSelector} from 'react-redux';
-import {fetchUserProfileData, isAuthUser} from "../../redux/slices/authSlice";
 import Avatar from "@mui/material/Avatar";
-import {Navigate} from "react-router-dom";
+import {IUser} from "../../interfaces/user.interface";
+import {noUserImgUrl} from "../../data/no.image.data";
 
 interface Props {
     isUser: boolean;
 }
 
 const Profile:FC<Props> = ({isUser}) => {
-    const isAuth = useSelector(isAuthUser);
+    const isAuth = useAppSelector(isAuthUser);
 
-    const [user, setUser] = useState({
+    const [user, setUser] = useState<IUser>({
         _id: '',
         firstName: '',
         lastName: '',
@@ -24,15 +29,13 @@ const Profile:FC<Props> = ({isUser}) => {
         avatarURL: ''
     });
 
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     const getUserData = async () => {
         const token = localStorage.getItem('token');
         // console.log(token)
         if (token) {
-            // @ts-ignore
-            const data = await dispatch(fetchUserProfileData());
-            // @ts-ignore
+            const data: PayloadAction<any> = await dispatch(fetchUserProfileData());
             if (data?.payload)
                 setUser(data.payload)
         }
@@ -56,7 +59,8 @@ const Profile:FC<Props> = ({isUser}) => {
 
                         <div>
                             <Avatar sx={{ marginTop: '20px',width: '156px', height: '156px' }}
-                                    alt="Avatar" src={user.avatarURL ? user.avatarURL : 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_640.png'}
+                                    alt="Avatar" src={user.avatarURL ? user.avatarURL : noUserImgUrl
+                            }
                             />
                         </div>
 

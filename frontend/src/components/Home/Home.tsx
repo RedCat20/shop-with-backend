@@ -1,15 +1,17 @@
-import Layout from "../Layout/Layout";
-import React, {useEffect} from "react";
-import {useSelector} from "react-redux";
+import {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHooks";
 import {userData} from "../../redux/slices/authSlice";
+
+import Layout from "../Layout/Layout";
 import styles from './Home.module.scss';
+
 import { IconButton } from "@mui/material";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import {useNavigate} from "react-router-dom";
 
 const Home = () => {
 
-    const user = useSelector(userData);
+    const user = useAppSelector(userData);
     const navigator = useNavigate();
 
     useEffect(() => {  },[user]);
@@ -18,7 +20,9 @@ const Home = () => {
         <Layout>
             <h1>Home page</h1>
             <div className={styles.centered}>
-                <h1 className={styles.welcome}>Shop application</h1>
+                <h1 className={styles.welcome}>
+                    Shop application
+                </h1>
                 <IconButton
                     size="large"
                     edge="start"

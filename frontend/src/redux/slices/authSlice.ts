@@ -1,9 +1,12 @@
 import {createSlice, createAsyncThunk, PayloadAction} from "@reduxjs/toolkit";
 import instanse from "../../axios";
+import {IUser} from "../../interfaces/user.interface";
+import {RootState} from "../store";
 
 export const fetchUserData = createAsyncThunk('auth/fetchUserData', async(params) => {
-    // console.log(params)
+    // console.log('params', params)
     const {data} = await instanse.post('http://localhost:5000/auth', params);
+    // console.log('auth user data: ', data);
     return data;
 });
 
@@ -13,13 +16,14 @@ export const fetchUserProfileData = createAsyncThunk('auth/fetchUserProfileData'
 });
 
 export const fetchUserRegistry = createAsyncThunk('auth/fetchUserRegistry', async(params) => {
-    const {data} = await instanse.post('http://localhost:5000/registry',params);
-    console.log('registered user data: ', data);
+    // console.log('params', params)
+    const {data} = await instanse.post('http://localhost:5000/registry', params);
+    // console.log('registered user data: ', data);
     return data;
 });
 
 interface IState {
-    userData: object | null;
+    userData: IUser | null;
     status: string;
 }
 
@@ -42,7 +46,7 @@ const authSlice = createSlice({
             state.status = 'loading';
             //state.userData = null;
         },
-        [fetchUserData.fulfilled.toString()]: (state: IState, action: PayloadAction<object>) => {
+        [fetchUserData.fulfilled.toString()]: (state: IState, action: PayloadAction<IUser>) => {
             state.status = 'loaded';
             state.userData = action.payload;
         },
@@ -55,7 +59,7 @@ const authSlice = createSlice({
             state.status = 'loading';
             //state.userData = null;
         },
-        [fetchUserProfileData.fulfilled.toString()]: (state: IState, action: PayloadAction<object>) => {
+        [fetchUserProfileData.fulfilled.toString()]: (state: IState, action: PayloadAction<IUser>) => {
             state.status = 'loaded';
             state.userData = action.payload;
         },
@@ -68,7 +72,7 @@ const authSlice = createSlice({
             state.status = 'loading';
             //state.userData = null;
         },
-        [fetchUserRegistry.fulfilled.toString()]: (state: IState, action: PayloadAction<object>) => {
+        [fetchUserRegistry.fulfilled.toString()]: (state: IState, action: PayloadAction<IUser>) => {
             state.status = 'loaded';
             state.userData = action.payload;
         },
@@ -79,8 +83,8 @@ const authSlice = createSlice({
     }
 });
 
-export const userData = (state: any) => state.auth.userData;
-export const isAuthUser = (state: any) => Boolean(state.auth.userData);
+export const userData = (state: RootState) => state.auth.userData;
+export const isAuthUser = (state: RootState) => Boolean(state.auth.userData);
 
 export const {logoutUser} = authSlice.actions;
 

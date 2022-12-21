@@ -8,6 +8,7 @@ import {RadioGroup,FormControlLabel,Radio} from "@mui/material";
 import {useUploadProductImageMutation} from "../../redux/api/productsApi";
 import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
 import {SerializedError} from "@reduxjs/toolkit";
+import {IProduct} from "../../interfaces/product.interface";
 
 interface IUploadImageRes {
     data?: any;
@@ -15,12 +16,12 @@ interface IUploadImageRes {
 }
 
 interface Props {
-    product?: any;
+    product?: IProduct;
     actionStr?: string;
-    onSubmit: (id: string, newProduct: {}) => void;
+    onSubmit: any;
 }
 
-const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
+const ProductEditForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
 
     //console.log('product of product form: ', product);
 
@@ -44,6 +45,8 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
     });
 
     const saveProductDataHandler = async (values: any) => {
+        if (!product) return;
+
         // console.log(values)
         try {
             const formData = new FormData();
@@ -53,12 +56,14 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
             }
             const res: IUploadImageRes = await uploadImage(formData);
 
-            let newProduct = {};
+            let newProduct: IProduct;
 
             if (res?.data?.url) {
                 newProduct = {...values, imageURL: res.data.url, isAvailable: isAvailableProduct};
-            } else {
+            } else if (product) {
                 newProduct = {...values, imageURL: product.imageURL, isAvailable: isAvailableProduct};
+            } else {
+                newProduct = {...values, imageURL: null, isAvailable: isAvailableProduct};
             }
             // console.log(product._id,newProduct)
             onSubmit( product._id, newProduct);
@@ -103,11 +108,24 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
                         <RadioGroup
                             row
                             aria-labelledby="available-radio-buttons-group-label"
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => { console.log(e.target.value); setIsAvailableProduct(e.target.value === 'true') }}
+                            onChange={
+                                (e: ChangeEvent<HTMLInputElement>) => {
+                                    // console.log(e.target.value);
+                                    setIsAvailableProduct(e.target.value === 'true')
+                                }
+                            }
                             defaultValue={product?.isAvailable === true}
                         >
-                            <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="true" control={<Radio />} label="True" />
-                            <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="false" control={<Radio />} label="False" />
+                            <FormControlLabel name="isAvailable"
+                                              onChange={(e) => {console.log(e)}}
+                                              value="true"
+                                              control={<Radio />}
+                                              label="True" />
+                            <FormControlLabel name="isAvailable"
+                                              onChange={(e) => {console.log(e)}}
+                                              value="false"
+                                              control={<Radio />}
+                                              label="False" />
                         </RadioGroup>
                     </FormControl>
 
@@ -137,4 +155,4 @@ const ProductForm:FC<Props> = ({ product, actionStr, onSubmit }) => {
     );
 };
 
-export default ProductForm;
+export default ProductEditForm;

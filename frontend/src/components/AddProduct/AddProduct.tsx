@@ -1,17 +1,18 @@
 import React, {ChangeEvent, FC, useState} from 'react';
 import {Navigate, useNavigate} from "react-router-dom";
-import styles from './AddProduct.module.scss';
-import Layout from "../Layout/Layout";
 import {useForm} from "react-hook-form";
-import {useSelector} from "react-redux";
+
+import Layout from "../Layout/Layout";
+import styles from './AddProduct.module.scss';
+
 import {isAuthUser} from "../../redux/slices/authSlice";
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHooks";
+import { useAddNewProductMutation, useUploadProductImageMutation } from "../../redux/api/productsApi";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
+import {SerializedError} from "@reduxjs/toolkit";
 
 import {InputLabel,Input,FormHelperText,Button,Paper,Box,Typography } from '@mui/material';
 import {Radio,RadioGroup,FormControlLabel,FormControl,FormLabel} from '@mui/material';
-
-import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
-import {SerializedError} from "@reduxjs/toolkit";
-import { useAddNewProductMutation, useUploadProductImageMutation } from "../../redux/api/productsApi";
 
 interface IUploadImageRes {
     data?: any;
@@ -20,7 +21,8 @@ interface IUploadImageRes {
 
 const AddProduct:FC = () => {
     const navigator = useNavigate();
-    const isAuth = useSelector(isAuthUser);
+    const isAuth = useAppSelector(isAuthUser);
+
     const [addProductError, setAddProductError] = useState('');
     const [isAvailableProduct, setIsAvailableProduct] = useState(true);
 
@@ -38,7 +40,8 @@ const AddProduct:FC = () => {
     });
 
     const onSubmit = async (values: any) => {
-        // console.log(values)
+        // console.log(values);
+
         try {
             const formData = new FormData();
             if (values.imageURL) {
@@ -48,16 +51,19 @@ const AddProduct:FC = () => {
             const res: IUploadImageRes = await uploadImage(formData);
 
             let imgUrl = null;
-            if (res && res.data && res.data.url)
+            if (res && res.data && res.data.url) {
                 imgUrl = res.data.url;
+            }
 
-            addNewProduct({...values, imageURL: imgUrl, isAvailable: isAvailableProduct});
+            console.log('sended prod: ', {...values, imageURL: imgUrl, isAvailable: isAvailableProduct})
+
+            await addNewProduct({...values, imageURL: imgUrl, isAvailable: isAvailableProduct});
 
         } catch (err) {
             setAddProductError('Can not add product')
             console.log('Can not add product', err);
         } finally {
-            navigator('/products');
+            navigator(`/products`);
         }
     }
 
@@ -107,8 +113,18 @@ const AddProduct:FC = () => {
                                 onChange={(e: ChangeEvent<HTMLInputElement>) => setIsAvailableProduct(e.target.value === 'true')}
                                 defaultValue="true"
                             >
-                                <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="true" control={<Radio />} label="True" />
-                                <FormControlLabel name="isAvailable" onChange={(e) => {console.log(e)}} value="false" control={<Radio />} label="False" />
+                                <FormControlLabel name="isAvailable"
+                                                  onChange={(e) => { console.log(e)} }
+                                                  value="true"
+                                                  control={<Radio />}
+                                                  label="True"
+                                />
+                                <FormControlLabel name="isAvailable"
+                                                  onChange={(e) => { console.log(e)} }
+                                                  value="false"
+                                                  control={<Radio />}
+                                                  label="False"
+                                />
                             </RadioGroup>
                         </FormControl>
 
@@ -119,7 +135,7 @@ const AddProduct:FC = () => {
                                    {...register('imageURL', {required: 'Please, choose a file of product photo'})}
                             />
                             <FormHelperText id="image-helper-text">
-                                {errors.imageURL?.message ? errors.imageURL?.message : "Please, choose a file"}
+                                {errors?.imageURL?.message ? errors?.imageURL?.message : "Please, choose a file"}
                             </FormHelperText>
                         </FormControl>
 

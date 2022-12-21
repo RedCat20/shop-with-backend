@@ -1,29 +1,24 @@
 import React, {FC, useState} from 'react';
-import Layout from "../Layout/Layout";
-import { FormControl,InputLabel,Input,FormHelperText } from '@mui/material';
+import {Navigate, useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
-import {Button,Paper,Box} from "@mui/material";
-import Typography from "@mui/material/Typography";
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHooks";
 import {fetchUserData, isAuthUser} from "../../redux/slices/authSlice";
-import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
 
-interface Props {
+import styles from "./Auth.module.scss";
+import Layout from "../Layout/Layout";
 
-}
+import { FormControl,InputLabel,Input,FormHelperText,Button,Paper,Box,Typography } from '@mui/material';
+
+interface Props { }
 
 const Auth:FC<Props> = () => {
-    const dispatch = useDispatch();
-    const isAuth = useSelector(isAuthUser);
+
+    const dispatch = useAppDispatch();
+    const isAuth = useAppSelector(isAuthUser);
     const navigator = useNavigate();
     const [authError, setAuthError] = useState('');
 
-    const {
-        register,
-        handleSubmit,
-        setError,
-        formState: {errors, isValid}
-    } = useForm({
+    const { register, handleSubmit, setError, formState: {errors, isValid} } = useForm({
         defaultValues: {
             email: 'd@gmail.com',
             password: '123456'
@@ -32,6 +27,8 @@ const Auth:FC<Props> = () => {
     });
 
     const onSubmit = async (values: any) => {
+        //console.log('values: ', values);
+
         // @ts-ignore
         const data = await dispatch(fetchUserData(values));
         if (!data?.payload) {
@@ -46,6 +43,12 @@ const Auth:FC<Props> = () => {
         }
     }
 
+    // console.log(isAuth);
+
+    if ((localStorage.getItem('token')) && isAuth) {
+        return <Navigate to="/"/>
+    }
+
     return (
        <Layout>
            <h1>Auth page</h1>
@@ -53,7 +56,9 @@ const Auth:FC<Props> = () => {
            <Box maxWidth={'sm'} sx={{m: '60px 0', margin: '0 auto'}}>
                <Paper sx={{p: '60px', minHeight: '400px'}}>
 
-                   <Typography variant="h4" sx={{marginBottom: '45px', textAlign: 'center'}}>Log in</Typography>
+                   <Typography variant="h4" sx={{marginBottom: '45px', textAlign: 'center'}}>
+                       Log in
+                   </Typography>
 
                    <form onSubmit={handleSubmit(onSubmit)}>
                        <FormControl fullWidth sx={{marginBottom: '45px'}}>

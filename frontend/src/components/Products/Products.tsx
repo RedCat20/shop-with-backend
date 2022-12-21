@@ -1,4 +1,4 @@
-import React from "react";
+import {MouseEvent} from "react";
 import styles from './Products.module.scss';
 
 import {useNavigate} from "react-router-dom";
@@ -14,6 +14,10 @@ const Products = () => {
 
     const { data, error, isLoading } = useGetProductsQuery('')
 
+    const onCardClickHandler = (id: string) => {
+        navigator(`/products/${id}`)
+    }
+
     return (
         <Layout>
             <h1>Products</h1>
@@ -27,7 +31,10 @@ const Products = () => {
                 {data && data?.length > 0 && data.map((product: any, idx: number) => {
                     return (
                         <Grid key={idx} item xs={12} sm={6} md={4} lg={3}>
-                            <Card sx={{ maxWidth: 300, padding: '20px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '15px'}}>
+                            <Card sx={{
+                                maxWidth: 300, padding: '20px', height: '100%',
+                                display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '15px'
+                            }}>
                                 <div className={styles.image}>
                                     <CardMedia
                                         component="img"
@@ -37,6 +44,7 @@ const Products = () => {
                                         alt="green iguana"
                                     />
                                 </div>
+
                                 <div>
                                     <CardContent>
                                         <Typography gutterBottom variant="h5" component="div" sx={{textAlign: 'center'}}>
@@ -50,11 +58,17 @@ const Products = () => {
                                     <CardActions sx={{display: 'flex', justifyContent: 'space-between'}}>
                                         <Button
                                             fullWidth
-                                            onClick={() => { navigator(`/products/${product._id}`) }} color="success" variant="contained"  size="medium" sx={{textTransform: 'none'}}>
+                                            onClick={(e: MouseEvent<HTMLButtonElement>) => onCardClickHandler(product._id)}
+                                            color="success"
+                                            variant="contained"
+                                            size="medium"
+                                            sx={{textTransform: 'none'}}
+                                        >
                                             Show more
                                         </Button>
                                     </CardActions>
                                 </div>
+
                             </Card>
                         </Grid>
                     )

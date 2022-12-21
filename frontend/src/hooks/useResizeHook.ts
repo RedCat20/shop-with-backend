@@ -1,4 +1,4 @@
-import {useState, useEffect, FC} from "react";
+import {useState, useEffect} from "react";
 
 interface ISize {
     width: number;

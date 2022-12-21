@@ -4,5 +4,7 @@ export interface IProduct {
     user: any;
     price: number;
     isAvailable: boolean;
+
     imageURL?: string;
+    ["string"]: string;
 }

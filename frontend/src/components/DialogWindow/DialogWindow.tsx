@@ -1,47 +1,33 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
+import {useState, MouseEvent,useEffect,useRef} from 'react';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {DialogContent,DialogTitle,IconButton} from '@mui/material';
 import {FC, ReactNode} from "react";
 import {Close} from "@mui/icons-material";
-import IconButton from "@mui/material/IconButton";
 
 interface Props {
     children?: ReactNode;
     isOpen?: boolean;
-    callback?: any;
+    //callback: ((product: IProduct, id?: string) => void);
+    callback: () => void;
 }
 
  const DialogWindow:FC<Props> = ({children, isOpen,callback}) => {
-    const [open, setOpen] = React.useState(isOpen);
-    const [scroll, setScroll] = React.useState<DialogProps['scroll']>('paper');
+    const [scroll, setScroll] = useState<DialogProps['scroll']>('paper');
 
-    const handleClickOpen = (scrollType: DialogProps['scroll']) => () => {
-        setOpen(true);
-        setScroll(scrollType);
-    };
-
-    // const handleClose = () => {
-    //     setOpen(false);
-    // };
-
-    const descriptionElementRef = React.useRef<HTMLElement>(null);
-    React.useEffect(() => {
-        if (open) {
+    const descriptionElementRef = useRef<HTMLElement>(null);
+    useEffect(() => {
+        if (isOpen) {
             const { current: descriptionElement } = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
         }
-    }, [open]);
+    }, [isOpen]);
 
     return (
         <>
-            {open && <Dialog
-              open={open}
+            {isOpen && <Dialog
+              open={isOpen}
               onClose={callback}
               scroll={scroll}
               aria-labelledby="scroll-dialog-title"
@@ -55,7 +41,7 @@ interface Props {
                   aria-label="account of current user"
                   aria-controls="menu-appbar"
                   aria-haspopup="true"
-                  onClick={callback}
+                  onClick={(e: MouseEvent<HTMLButtonElement>) => callback()}
                   color="secondary"
                 >
                   <Close />
@@ -63,20 +49,6 @@ interface Props {
               </DialogTitle>
               <DialogContent dividers={scroll === 'paper'}>
                   {children}
-{/*                <DialogContentText*/}
-{/*                  id="scroll-dialog-description"*/}
-{/*                  ref={descriptionElementRef}*/}
-{/*                  tabIndex={-1}*/}
-{/*                >*/}
-{/*                    {[...new Array(50)]*/}
-{/*                        .map(*/}
-{/*                            () => `Cras mattis consectetur purus sit amet fermentum.*/}
-{/*Cras justo odio, dapibus ac facilisis in, egestas eget quam.*/}
-{/*Morbi leo risus, porta ac consectetur ac, vestibulum at eros.*/}
-{/*Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,*/}
-{/*                        )*/}
-{/*                        .join('\n')}*/}
-{/*                </DialogContentText>*/}
               </DialogContent>
               {/*<DialogActions>*/}
               {/*  <Button onClick={callback}>Cancel</Button>*/}

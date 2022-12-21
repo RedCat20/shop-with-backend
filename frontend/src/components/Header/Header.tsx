@@ -1,39 +1,26 @@
 import React, {FC} from 'react';
 import useWindowSize from '../../hooks/useResizeHook';
+import {headerLinks as links, IHeaderLink} from "../../data/header.data";
+import {useAppDispatch, useAppSelector} from "../../hooks/storeHooks";
 
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
+import {AppBar,Box,Toolbar,IconButton,Typography} from '@mui/material';
+import {Menu,Container,Button,MenuItem,ButtonGroup} from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import AdbIcon from '@mui/icons-material/Adb';
-import {useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {logoutUser, userData} from "../../redux/slices/authSlice";
 
-const links = [
-    { id: 0, title: 'Home', path: '/' },
-    { id: 1, title: 'Products', path: '/products' },
-    // { id: 1, title: 'Auth', path: '/auth' },
-    // { id: 2, title: 'Registry', path: '/registry' },
-    // { id: 3, title: 'Profile', path: '/profile' },
-];
+import {useNavigate} from "react-router-dom";
+import {logoutUser, userData} from "../../redux/slices/authSlice";
 
 interface Props { }
 
 const Header:FC<Props> = () => {
     const size = useWindowSize();
-
     const navigator = useNavigate();
-    const dispatch = useDispatch();
 
-    const isAuth = useSelector(userData);
+    const dispatch = useAppDispatch();
+
+    const isAuth = useAppSelector(userData);
 
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
@@ -66,7 +53,9 @@ const Header:FC<Props> = () => {
                             textDecoration: 'none',
                         }}
                     >
-                        {size?.width > 575 && <>SHOP</>}
+                        {size?.width > 575 &&
+                          <>SHOP</>
+                        }
                     </Typography>
 
                     <Box sx={{flexGrow: 1, display: {xs: 'flex', md: 'none'}}}>
@@ -99,7 +88,7 @@ const Header:FC<Props> = () => {
                             }}
                         >
 
-                            {links.map((link, idx) => (
+                            {links?.map((link: IHeaderLink, idx: number) => (
                                 <MenuItem key={link.id} onClick={() => handleCloseNavMenu(link.path)}>
                                     <Typography textAlign="center">
                                         {link.title}
@@ -108,7 +97,7 @@ const Header:FC<Props> = () => {
                             ))}
 
                             {isAuth &&
-                              <MenuItem key={links.length + 1} onClick={() => handleCloseNavMenu('/add-product')}>
+                              <MenuItem key={links?.length + 1} onClick={() => handleCloseNavMenu('/add-product')}>
                                 <Typography textAlign="center">
                                     Add product
                                 </Typography>
@@ -143,7 +132,7 @@ const Header:FC<Props> = () => {
 
                     <Box sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}>
 
-                        {links.map((link, idx) => (
+                        {links?.map((link:IHeaderLink, idx: number) => (
 
                             <Button
                                 key={link.id}
@@ -157,7 +146,7 @@ const Header:FC<Props> = () => {
 
                         {isAuth &&
                           <Button
-                            key={links.length + 1}
+                            key={links?.length + 1}
                             onClick={() => handleCloseNavMenu('/add-product')}
                             sx={{my: 2, color: 'white', display: 'block'}}
                           >
