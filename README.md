@@ -1,18 +1,27 @@
+
+# shop-with-backend
+
 DEMO:
 
 https://shop-backend-brown.vercel.app
 
-# shop-with-backend
+# Default user: 
+
+d@gmail.com
+
+123456
 
 # Backend
 
-npm i backend
+cd backend
+npm install 
 
 npm run start
 
 # Frontend
 
-npm i frontend
+cd frontend 
+npm install
 
 npm run start
 
